@@ -2,13 +2,13 @@
 
 name = "v2ex"
 license = "MIT"
-licenselink = "https://github.com/your-username/your-blog-repo/blob/main/LICENSE"
+licenselink = "https://github.com/freepoint-jsj/my-v2ex-blog/blob/main/LICENSE"
 description = "V2EX 风格的极简时间轴博客主题，专为 GitHub Issues 写作设计"
-homepage = "https://github.com/your-username/your-blog-repo"
+homepage = "https://github.com/freepoint-jsj/my-v2ex-blog"
 tags = ["v2ex", "minimal", "blog", "timeline", "responsive"]
 features = ["responsive", "tags", "pagination", "rss", "syntax-highlighting"]
 min_version = "0.100.0"
 
 [author]
-  name = "your-username"
-  homepage = "https://github.com/your-username"
+  name = "freepoint-jsj"
+  homepage = "https://github.com/freepoint-jsj"

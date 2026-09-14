@@ -2,9 +2,9 @@
 # Hugo 配置文件 - V2EX 风格博客
 # ============================================================
 
-baseURL = "https://your-blog.example.com/"
+baseURL = "https://my-v2ex-blog.pages.dev/"
 languageCode = "zh-CN"
-title = "我的时间轴"
+title = "freepoint 的时间轴"
 theme = "v2ex"
 enableGitInfo = true
 enableEmoji = true
@@ -33,9 +33,9 @@ summaryLength = 200
 [params]
   # 站点信息
   description = "一个用 GitHub Issues 写作、Hugo 生成、Cloudflare Pages 托管的时间轴博客"
-  author = "你的名字"
+  author = "freepoint"
   # GitHub 仓库（用于同步 Issues）
-  githubRepo = "your-username/your-blog-repo"
+  githubRepo = "freepoint-jsj/my-v2ex-blog"
   # 备案信息（可选，留空则不显示）
   beian = ""
   # 每页显示文章数
@@ -75,7 +75,7 @@ summaryLength = 200
     weight = 3
   [[menu.main]]
     name = "GitHub"
-    url = "https://github.com/your-username/your-blog-repo"
+    url = "https://github.com/freepoint-jsj/my-v2ex-blog"
     weight = 4
 
 # 输出格式
