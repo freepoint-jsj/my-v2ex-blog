@@ -1,0 +1,68 @@
+{{ partial "header.html" . }}
+
+<div id="main-box">
+    <div class="content-box">
+        <div class="page-title">
+            <h1>{{ .Title }}</h1>
+            <span class="count">{{ .Paginator.TotalNumberOfElements }} 篇</span>
+        </div>
+
+        <div class="post-list">
+            {{ range .Paginator.Pages }}
+            <article class="post-item">
+                <div class="post-main">
+                    <span class="post-avatar">
+                        <span class="avatar-placeholder">{{ substr (or .Params.author $.Site.Params.author "A") 0 1 }}</span>
+                    </span>
+                    <div class="post-body">
+                        <div class="post-title-row">
+                            <a href="{{ .RelPermalink }}" class="post-title">{{ .Title }}</a>
+                        </div>
+                        <div class="post-meta">
+                            <span class="post-author">
+                                {{ .Params.author | default $.Site.Params.author }}
+                            </span>
+                            {{ range .Params.labels }}
+                            <span class="post-tag">{{ . }}</span>
+                            {{ end }}
+                            <span class="post-date">
+                                <span class="sep">·</span>
+                                {{ .Date.Format "2006-01-02 15:04" }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            {{ else }}
+            <div class="empty-state">
+                <p>这里还没有内容。</p>
+            </div>
+            {{ end }}
+        </div>
+
+        {{ if gt .Paginator.TotalPages 1 }}
+        <div class="pagination">
+            {{ if .Paginator.HasPrev }}
+            <a href="{{ .Paginator.Prev.URL }}" class="page-btn">← 上一页</a>
+            {{ else }}
+            <span class="page-btn disabled">← 上一页</span>
+            {{ end }}
+            <span class="page-info">{{ .Paginator.PageNumber }} / {{ .Paginator.TotalPages }}</span>
+            {{ if .Paginator.HasNext }}
+            <a href="{{ .Paginator.Next.URL }}" class="page-btn">下一页 →</a>
+            {{ else }}
+            <span class="page-btn disabled">下一页 →</span>
+            {{ end }}
+        </div>
+        {{ end }}
+    </div>
+
+    <aside class="sidebar">
+        <div class="sidebar-box">
+            <h3>关于</h3>
+            <p>{{ .Site.Params.description }}</p>
+        </div>
+    </aside>
+</div>
+
+{{ partial "footer.html" . }}

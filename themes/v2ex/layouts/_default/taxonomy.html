@@ -1,0 +1,49 @@
+{{ partial "header.html" . }}
+
+<div id="main-box">
+    <div class="content-box">
+        <div class="page-title">
+            <h1>标签：{{ .Title }}</h1>
+            <span class="count">{{ .Paginator.TotalNumberOfElements }} 篇</span>
+        </div>
+
+        <div class="post-list">
+            {{ range .Paginator.Pages }}
+            <article class="post-item">
+                <div class="post-main">
+                    <span class="post-avatar">
+                        <span class="avatar-placeholder">{{ substr (or .Params.author $.Site.Params.author "A") 0 1 }}</span>
+                    </span>
+                    <div class="post-body">
+                        <div class="post-title-row">
+                            <a href="{{ .RelPermalink }}" class="post-title">{{ .Title }}</a>
+                        </div>
+                        <div class="post-meta">
+                            <span class="post-author">{{ .Params.author | default $.Site.Params.author }}</span>
+                            <span class="post-date">
+                                <span class="sep">·</span>
+                                {{ .Date.Format "2006-01-02 15:04" }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            {{ end }}
+        </div>
+    </div>
+
+    <aside class="sidebar">
+        <div class="sidebar-box">
+            <h3>所有标签</h3>
+            <div class="tag-cloud">
+                {{ range $.Site.Taxonomies.tags.ByCount }}
+                <a href="{{ .Page.RelPermalink }}" class="tag-link">
+                    {{ .Page.Title }}<span class="tag-count">{{ .Count }}</span>
+                </a>
+                {{ end }}
+            </div>
+        </div>
+    </aside>
+</div>
+
+{{ partial "footer.html" . }}

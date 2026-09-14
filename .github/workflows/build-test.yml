@@ -1,0 +1,45 @@
+# ============================================================
+# 工作流：本地构建测试（可选）
+# ============================================================
+# 在 push 到 main 分支时，用 Hugo 构建一次，确保配置无误
+# 不部署，只验证能否成功生成
+# ============================================================
+
+name: Build Test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'config.toml'
+      - 'themes/**'
+      - 'content/**'
+      - 'archetypes/**'
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: 'latest'
+          extended: true
+
+      - name: Build
+        run: hugo --minify --gc
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: public
+          path: ./public
+          retention-days: 7

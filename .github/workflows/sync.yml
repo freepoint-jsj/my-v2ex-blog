@@ -1,0 +1,92 @@
+# ============================================================
+# 工作流：GitHub Issues 同步到 Hugo content/posts
+# ============================================================
+# 触发条件：
+#   1. 当 Issue 被创建/编辑/关闭/重新打开时
+#   2. 每天定时同步一次（防止遗漏）
+#   3. 手动触发
+#
+# 工作流程：
+#   1. 拉取 Issues → 写入 content/posts/*.md
+#   2. git commit & push 到仓库
+#   3. push 后 Cloudflare Pages 会自动检测并重新构建
+# ============================================================
+
+name: Sync Issues
+
+on:
+  issues:
+    types: [opened, edited, closed, reopened, labeled, unlabeled, deleted]
+  schedule:
+    # 每天北京时间 04:00 同步一次（UTC 20:00）
+    - cron: '0 20 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Sync Issues to Hugo posts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+          EXCLUDE_LABELS: 'draft,private,wip'
+        run: node scripts/sync-issues.js
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if [[ -n "$(git status --porcelain content/posts/)" ]]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "有变更"
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "无变更"
+          fi
+
+      - name: Commit and push
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add content/posts/
+          git commit -m "chore: sync issues [skip ci]
+
+          Triggered by: ${{ github.event_name }}
+          Commit: ${{ github.sha }}"
+          git push
+
+      - name: Trigger Cloudflare Pages rebuild
+        if: steps.changes.outputs.changed == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_PROJECT_NAME: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
+        run: |
+          # 如果配置了 Cloudflare Deploy Hook，则触发它
+          # 在 Cloudflare Pages 项目设置 → Deploy Hooks 创建一个 hook
+          # 然后添加到仓库 Secrets: CF_DEPLOY_HOOK_URL
+          if [[ -n "${{ secrets.CF_DEPLOY_HOOK_URL }}" ]]; then
+            echo "触发 Cloudflare Deploy Hook..."
+            curl -X POST "${{ secrets.CF_DEPLOY_HOOK_URL }}" \
+              -H "Content-Type: application/json" \
+              -d '{}'
+            echo "已触发"
+          else
+            echo "未配置 CF_DEPLOY_HOOK_URL，跳过（push 后 Cloudflare Pages 会自动检测 git 变更并构建）"
+          fi

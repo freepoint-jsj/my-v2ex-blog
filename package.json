@@ -1,0 +1,13 @@
+{
+  "name": "hugo-v2ex-blog",
+  "version": "1.0.0",
+  "description": "V2EX 风格时间轴博客，数据源为 GitHub Issues",
+  "private": true,
+  "scripts": {
+    "sync": "node scripts/sync-issues.js",
+    "build": "hugo --minify --gc",
+    "serve": "hugo server -D --bind 0.0.0.0 --port 1313",
+    "dev": "hugo server -D"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,93 @@
+{{ partial "header.html" . }}
+
+<div id="main-box">
+    <div class="content-box single-content">
+        <article class="post-single">
+            <header class="post-header">
+                <h1 class="post-single-title">{{ .Title }}</h1>
+                <div class="post-single-meta">
+                    <span class="author">
+                        <a href="https://github.com/{{ .Params.author | default $.Site.Params.githubRepo }}" target="_blank" rel="noopener">
+                            {{ .Params.author | default $.Site.Params.author }}
+                        </a>
+                    </span>
+                    <span class="sep">·</span>
+                    <span class="date">{{ .Date.Format "2006-01-02 15:04" }}</span>
+                    {{ with .Params.labels }}
+                    {{ range . }}
+                    <span class="post-tag">{{ . }}</span>
+                    {{ end }}
+                    {{ else }}
+                    {{ range .Params.tags }}
+                    <span class="post-tag">{{ . }}</span>
+                    {{ end }}
+                    {{ end }}
+                    {{ with .Params.issueNumber }}
+                    <span class="sep">·</span>
+                    <a href="https://github.com/{{ $.Site.Params.githubRepo }}/issues/{{ . }}" target="_blank" rel="noopener" class="issue-link">
+                        在 GitHub 查看 →
+                    </a>
+                    {{ end }}
+                </div>
+            </header>
+
+            <div class="post-content">
+                {{ .Content }}
+            </div>
+
+            {{ if .Params.issueNumber }}
+            <div class="post-footer">
+                <div class="edit-hint">
+                    这篇文章来自 GitHub Issue，欢迎在
+                    <a href="https://github.com/{{ .Site.Params.githubRepo }}/issues/{{ .Params.issueNumber }}" target="_blank" rel="noopener">
+                        原始 Issue
+                    </a>
+                    下评论交流。
+                </div>
+            </div>
+            {{ end }}
+        </article>
+
+        <nav class="post-nav">
+            {{ with .PrevInSection }}
+            <a href="{{ .RelPermalink }}" class="prev">
+                <span class="nav-label">← 上一篇</span>
+                <span class="nav-title">{{ .Title }}</span>
+            </a>
+            {{ else }}
+            <span class="prev disabled">
+                <span class="nav-label">← 上一篇</span>
+                <span class="nav-title">没有了</span>
+            </span>
+            {{ end }}
+            {{ with .NextInSection }}
+            <a href="{{ .RelPermalink }}" class="next">
+                <span class="nav-label">下一篇 →</span>
+                <span class="nav-title">{{ .Title }}</span>
+            </a>
+            {{ else }}
+            <span class="next disabled">
+                <span class="nav-label">下一篇 →</span>
+                <span class="nav-title">没有了</span>
+            </span>
+            {{ end }}
+        </nav>
+    </div>
+
+    <aside class="sidebar">
+        <div class="sidebar-box">
+            <h3>目录</h3>
+            {{ .TableOfContents }}
+        </div>
+        <div class="sidebar-box">
+            <h3>最近文章</h3>
+            <ul class="recent-list">
+                {{ range first 8 (where .Site.RegularPages "Section" "posts") }}
+                <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+                {{ end }}
+            </ul>
+        </div>
+    </aside>
+</div>
+
+{{ partial "footer.html" . }}

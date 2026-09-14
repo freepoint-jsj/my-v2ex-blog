@@ -1,0 +1,84 @@
+# ============================================================
+# Hugo 配置文件 - V2EX 风格博客
+# ============================================================
+
+baseURL = "https://your-blog.example.com/"
+languageCode = "zh-CN"
+title = "我的时间轴"
+theme = "v2ex"
+enableGitInfo = true
+enableEmoji = true
+enableRobotsTXT = true
+hasCJKLanguage = true
+summaryLength = 200
+
+# 分页（Hugo 0.128+ 使用 pagination.pagerSize）
+[pagination]
+  pagerSize = 20
+
+# Markdown 渲染
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.highlight]
+    style = "friendly"
+    lineNos = false
+    codeFences = true
+  [markup.tableOfContents]
+    endLevel = 3
+    startLevel = 2
+
+# 站点参数
+[params]
+  # 站点信息
+  description = "一个用 GitHub Issues 写作、Hugo 生成、Cloudflare Pages 托管的时间轴博客"
+  author = "你的名字"
+  # GitHub 仓库（用于同步 Issues）
+  githubRepo = "your-username/your-blog-repo"
+  # 备案信息（可选，留空则不显示）
+  beian = ""
+  # 每页显示文章数
+  pageSize = 20
+  # 是否显示摘要
+  showSummary = true
+  # 摘要字数
+  summaryLength = 120
+  # 版权起始年份
+  sinceYear = "2024"
+
+  # V2EX 风格配色
+  [params.colors]
+    primary = "#778087"        # 主色（链接、强调）
+    primaryHover = "#555"      # 链接 hover
+    background = "#e2e2e2"     # 页面背景
+    cardBg = "#ffffff"         # 卡片背景
+    border = "#e2e2e2"         # 边框
+    text = "#333"              # 正文
+    textSecondary = "#999"    # 次要文字
+    tagBg = "#f5f5f5"          # 标签背景
+    tagText = "#999"           # 标签文字
+
+# 菜单
+[menu]
+  [[menu.main]]
+    name = "首页"
+    url = "/"
+    weight = 1
+  [[menu.main]]
+    name = "归档"
+    url = "/posts/"
+    weight = 2
+  [[menu.main]]
+    name = "标签"
+    url = "/tags/"
+    weight = 3
+  [[menu.main]]
+    name = "GitHub"
+    url = "https://github.com/your-username/your-blog-repo"
+    weight = 4
+
+# 输出格式
+[outputs]
+  home = ["HTML", "RSS"]
+  section = ["HTML", "RSS"]

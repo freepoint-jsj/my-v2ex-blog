@@ -1,0 +1,29 @@
+{{ partial "header.html" . }}
+
+<div id="main-box">
+    <div class="content-box">
+        <div class="page-title">
+            <h1>所有标签</h1>
+            <span class="count">{{ .Site.Taxonomies.tags.Len }} 个</span>
+        </div>
+
+        <div class="tag-cloud big-tag-cloud">
+            {{ range .Site.Taxonomies.tags.ByCount }}
+            <a href="{{ .Page.RelPermalink }}" class="tag-link">
+                {{ .Page.Title }}<span class="tag-count">{{ .Count }}</span>
+            </a>
+            {{ else }}
+            <p class="empty">暂无标签</p>
+            {{ end }}
+        </div>
+    </div>
+
+    <aside class="sidebar">
+        <div class="sidebar-box">
+            <h3>关于</h3>
+            <p>{{ .Site.Params.description }}</p>
+        </div>
+    </aside>
+</div>
+
+{{ partial "footer.html" . }}

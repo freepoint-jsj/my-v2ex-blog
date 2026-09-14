@@ -1,0 +1,21 @@
+        <footer id="bottom-bar">
+            <div class="bottom-bar-inner">
+                <p>
+                    {{ with .Site.Params.sinceYear }}{{ . }} - {{ end }}{{ now.Format "2006" }} {{ $.Site.Title }}
+                    {{ with .Site.Params.author }} · {{ . }}{{ end }}
+                </p>
+                <p class="powered-by">
+                    Powered by <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>
+                    · Hosted on <a href="https://pages.cloudflare.com" target="_blank" rel="noopener">Cloudflare Pages</a>
+                    · Written in <a href="https://github.com/{{ .Site.Params.githubRepo }}" target="_blank" rel="noopener">GitHub Issues</a>
+                </p>
+                {{ with .Site.Params.beian }}
+                <p class="beian">{{ . }}</p>
+                {{ end }}
+            </div>
+        </footer>
+    </div>
+</div>
+<script src="/js/main.js"></script>
+</body>
+</html>
