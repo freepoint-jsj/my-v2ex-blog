@@ -63,10 +63,10 @@ img {
 }
 
 .top-bar-inner {
-    max-width: 1100px;
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 0 20px;
-    height: 50px;
+    padding: 0 32px;
+    height: 52px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -105,12 +105,12 @@ img {
    ============================================================ */
 
 #main-box {
-    max-width: 1100px;
-    margin: 20px auto;
-    padding: 0 20px;
+    max-width: 1400px;
+    margin: 24px auto;
+    padding: 0 32px;
     display: grid;
-    grid-template-columns: 1fr 280px;
-    gap: 20px;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
     flex: 1;
 }
 
@@ -118,11 +118,11 @@ img {
     background: #fff;
     border: 1px solid #e2e2e2;
     border-radius: 4px;
-    padding: 20px;
+    padding: 24px 28px;
 }
 
 .single-content {
-    padding: 30px;
+    padding: 36px 40px;
 }
 
 /* ============================================================
@@ -733,9 +733,9 @@ img {
 }
 
 .bottom-bar-inner {
-    max-width: 1100px;
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 32px;
     text-align: center;
     font-size: 12px;
     color: #999;
@@ -763,6 +763,29 @@ img {
    响应式
    ============================================================ */
 
+/* 大屏（>1600px）：稍微再放宽一点，但不超过 1500px，避免单行过长难读 */
+@media (min-width: 1600px) {
+    .top-bar-inner,
+    #main-box,
+    .bottom-bar-inner {
+        max-width: 1500px;
+    }
+}
+
+/* 中等屏幕（1024px - 1200px）：保持双栏但收窄侧边栏 */
+@media (max-width: 1200px) {
+    #main-box {
+        grid-template-columns: 1fr 260px;
+        gap: 20px;
+        padding: 0 24px;
+    }
+    .top-bar-inner,
+    .bottom-bar-inner {
+        padding: 0 24px;
+    }
+}
+
+/* 平板（<=900px）：单栏，侧边栏移到下方 */
 @media (max-width: 900px) {
     #main-box {
         grid-template-columns: 1fr;
@@ -773,10 +796,11 @@ img {
     }
 }
 
+/* 手机（<=600px） */
 @media (max-width: 600px) {
     .top-bar-inner {
-        padding: 0 12px;
-        height: 44px;
+        padding: 0 14px;
+        height: 46px;
     }
 
     .logo {
@@ -792,17 +816,17 @@ img {
     }
 
     #main-box {
-        padding: 0 10px;
-        margin: 10px auto;
+        padding: 0 12px;
+        margin: 12px auto;
         gap: 12px;
     }
 
     .content-box {
-        padding: 14px;
+        padding: 16px;
     }
 
     .single-content {
-        padding: 18px;
+        padding: 20px;
     }
 
     .post-single-title {
@@ -823,5 +847,9 @@ img {
 
     .post-single-meta .issue-link {
         margin-left: 0;
+    }
+
+    .bottom-bar-inner {
+        padding: 0 14px;
     }
 }
