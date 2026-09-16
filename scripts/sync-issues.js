@@ -119,6 +119,11 @@ function normalizeContent(body) {
 
 /**
  * 把单个 Issue 转成 Hugo markdown 内容
+ *
+ * 规则：
+ *   - 如果 Issue 带 "moment"（瞬间）标签，则当作「说说/短动态」处理
+ *     首页时间轴会直接显示正文，不显示标题，类似 QQ 空间说说
+ *   - 否则当作普通文章处理，首页显示标题 + 摘要
  */
 function issueToMarkdown(issue) {
     const title = issue.title || `Issue #${issue.number}`;
@@ -133,7 +138,10 @@ function issueToMarkdown(issue) {
     const url = issue.html_url;
     const content = normalizeContent(issue.body || '');
 
-    // 生成 front matter
+    // 检测是否为「瞬间」模式
+    const isMoment = labels.some(l => l.toLowerCase() === 'moment' || l === '瞬间');
+
+    // 生成 front Matter
     const fm = [
         '+++',
         `title = ${escapeYaml(title)}`,
@@ -148,9 +156,18 @@ function issueToMarkdown(issue) {
         `comments = ${comments}`,
     ];
 
+    // 标记是否为瞬间/说说
+    if (isMoment) {
+        fm.push(`moment = true`);
+    }
+
     if (labels.length > 0) {
         fm.push('labels = [' + labels.map(l => escapeYaml(l)).join(', ') + ']');
-        fm.push('tags = [' + labels.map(l => escapeYaml(l)).join(', ') + ']');
+        // 标签里排除 moment/瞬间，避免在侧边栏标签云里出现这个功能性标签
+        const tagsForCloud = labels.filter(l => l.toLowerCase() !== 'moment' && l !== '瞬间');
+        if (tagsForCloud.length > 0) {
+            fm.push('tags = [' + tagsForCloud.map(l => escapeYaml(l)).join(', ') + ']');
+        }
     }
 
     fm.push('+++');
