@@ -1,15 +1,14 @@
 # ============================================================
-# 工作流：GitHub Issues 同步到 Hugo content/posts
+# 工作流：GitHub Issues → Hugo 构建 → Cloudflare Pages 部署
 # ============================================================
 # 触发条件：
-#   1. 当 Issue 被创建/编辑/关闭/重新打开时
+#   1. 当 Issue 被创建/编辑/关闭/重新打开/打标签时
 #   2. 每天定时同步一次（防止遗漏）
 #   3. 手动触发
 #
-# 工作流程：
-#   1. 拉取 Issues → 写入 content/posts/*.md
-#   2. git commit & push 到仓库
-#   3. push 后 Cloudflare Pages 会自动检测并重新构建
+# 完整自动化链路：
+#   写 Issue → 同步到 content/posts → Hugo 构建 → 部署到 Cloudflare Pages
+#   全程无需人工干预，几分钟内网站自动更新
 # ============================================================
 
 name: Sync Issues
@@ -27,7 +26,7 @@ permissions:
   issues: read
 
 jobs:
-  sync:
+  sync-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -41,6 +40,12 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.140.0'
+          extended: true
+
       - name: Sync Issues to Hugo posts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -53,10 +58,10 @@ jobs:
         run: |
           if [[ -n "$(git status --porcelain content/posts/)" ]]; then
             echo "changed=true" >> $GITHUB_OUTPUT
-            echo "有变更"
+            echo "✓ 检测到内容变更"
           else
             echo "changed=false" >> $GITHUB_OUTPUT
-            echo "无变更"
+            echo "→ 无内容变更"
           fi
 
       - name: Commit and push
@@ -71,22 +76,20 @@ jobs:
           Commit: ${{ github.sha }}"
           git push
 
-      - name: Trigger Cloudflare Pages rebuild
-        if: steps.changes.outputs.changed == 'true'
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_PROJECT_NAME: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
+      - name: Build with Hugo
+        run: hugo --minify --gc
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy public --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} --branch=main
+
+      - name: Deployment summary
         run: |
-          # 如果配置了 Cloudflare Deploy Hook，则触发它
-          # 在 Cloudflare Pages 项目设置 → Deploy Hooks 创建一个 hook
-          # 然后添加到仓库 Secrets: CF_DEPLOY_HOOK_URL
-          if [[ -n "${{ secrets.CF_DEPLOY_HOOK_URL }}" ]]; then
-            echo "触发 Cloudflare Deploy Hook..."
-            curl -X POST "${{ secrets.CF_DEPLOY_HOOK_URL }}" \
-              -H "Content-Type: application/json" \
-              -d '{}'
-            echo "已触发"
-          else
-            echo "未配置 CF_DEPLOY_HOOK_URL，跳过（push 后 Cloudflare Pages 会自动检测 git 变更并构建）"
-          fi
+          echo "## ✅ 部署完成" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- 网站地址: https://${{ secrets.CLOUDFLARE_PROJECT_NAME }}.pages.dev" >> $GITHUB_STEP_SUMMARY
+          echo "- 触发方式: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- 内容变更: ${{ steps.changes.outputs.changed }}" >> $GITHUB_STEP_SUMMARY
